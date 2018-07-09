@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
         db = dbHelper.getWritableDatabase();
         articles2=dbManager.load(articleDB);
         /////
-        updateList(articles2);
+        adapter = new ArticleAdapter(this, R.layout.article_layout, articles2, getLayoutInflater());
+        list.setAdapter(adapter);
         /////
         list.setOnItemClickListener(this);
         Log.d("myTag",db.getPath()+" Version:"+ String.valueOf(db.getVersion()));
@@ -69,21 +70,20 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
             if (data != null) {
                 switch (requestCode) {
                     case ADD_REQUEST:
-                        articles2.add(new Article(data.getStringExtra(articleDB.firstRow),
-                                data.getStringExtra(articleDB.secondRow), data.getStringExtra(articleDB.thirdRow)));
-                        //adapter.notifyDataSetChanged();
-                        updateList(articles2);
+                        String frow = data.getStringExtra(articleDB.firstRow);
+                        String srow = data.getStringExtra(articleDB.secondRow);
+                        String trow = data.getStringExtra(articleDB.thirdRow);
+                        articles2.add(new Article(frow,srow,trow));
+                        adapter.notifyDataSetChanged();
                         break;
                     case EDIT_REQUEST:
-                        //articles2.remove(editingPosition);
                         articles2.set(editingPosition, new Article(
                                 data.getStringExtra(articleDB.firstRow),
                                 data.getStringExtra(articleDB.secondRow),
                                 data.getStringExtra(articleDB.thirdRow)
 
                         ));
-                        //adapter.notifyDataSetChanged();
-                        updateList(articles2);
+                        adapter.notifyDataSetChanged();
                         break;
 
                 }
@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                             case R.id.menuDel:
                                 db.execSQL("DELETE FROM "+articleDB.name+" WHERE "+articleDB.firstRow+"='"+ articles2.get(irrr).headder+"';");
                                 articles2.remove(irrr);
-                                //adapter.notifyDataSetChanged();
-                                updateList(articles2);
+                                adapter.notifyDataSetChanged();
+                                //updateList(articles2);
                                 return true;
                             case R.id.menuEdit:
                                 editingPosition=irrr;
