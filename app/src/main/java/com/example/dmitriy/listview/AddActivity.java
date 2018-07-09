@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,8 +18,9 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     DBHelper dbHelper;
     DbManager dbManager;
     ArticleDB articleDB;
-    static final String ERROR_MSG="You have empty fields";
-
+    static final String ERROR_MSG="You have empty fields",BUTTON_TEXT_EDIT="Edit";
+    int requestCode;
+    Button button;
 
 
     @Override
@@ -28,12 +30,17 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         header=(EditText)findViewById(R.id.editTextHeader);
         desc=(EditText)findViewById(R.id.editTextDescription);
         text=(EditText)findViewById(R.id.editTextText);
+        button = (Button)findViewById(R.id.buttonConfirm);
         articleDB=MainActivity.articleDB;
         dbHelper = new DBHelper(this,articleDB);
         dbManager = new DbManager(dbHelper);
         header.setText(getIntent().getStringExtra(articleDB.firstRow));
         desc.setText(getIntent().getStringExtra(articleDB.secondRow));
         text.setText(getIntent().getStringExtra(articleDB.thirdRow));
+        requestCode = getIntent().getIntExtra(MainActivity.REQUES_CODE, 0);
+        if(requestCode==MainActivity.EDIT_REQUEST)
+            button.setText(BUTTON_TEXT_EDIT);
+
     }
 
     @Override
@@ -46,7 +53,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             if (headerText.equals("") || descText.equals("") || textText.equals("")) {
                 Toast.makeText(getApplicationContext(), ERROR_MSG, Toast.LENGTH_LONG).show();
             } else {
-                int requestCode = getIntent().getIntExtra(MainActivity.REQUES_CODE, 0);
                 if (requestCode == MainActivity.ADD_REQUEST) {
 
                     dbManager.add(headerText, descText, textText, articleDB);

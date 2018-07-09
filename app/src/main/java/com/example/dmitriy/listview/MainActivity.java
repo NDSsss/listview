@@ -71,16 +71,18 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                     case ADD_REQUEST:
                         articles2.add(new Article(data.getStringExtra(articleDB.firstRow),
                                 data.getStringExtra(articleDB.secondRow), data.getStringExtra(articleDB.thirdRow)));
+                        //adapter.notifyDataSetChanged();
                         updateList(articles2);
                         break;
                     case EDIT_REQUEST:
-                        articles2.remove(editingPosition);
+                        //articles2.remove(editingPosition);
                         articles2.set(editingPosition, new Article(
                                 data.getStringExtra(articleDB.firstRow),
                                 data.getStringExtra(articleDB.secondRow),
                                 data.getStringExtra(articleDB.thirdRow)
 
                         ));
+                        //adapter.notifyDataSetChanged();
                         updateList(articles2);
                         break;
 
@@ -88,27 +90,11 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
             }
         }
     }
-    public void fromDbToList()
-    {
-        articles2 = new ArrayList<Article>();
-        Cursor cursor =db.query(articleDB.name, null, null, null, null, null, null);
-
-        if(cursor.moveToFirst()) {
-            int headerColIndex = cursor.getColumnIndex(articleDB.firstRow);
-            int descColIndex = cursor.getColumnIndex(articleDB.secondRow);
-            int textColIndex = cursor.getColumnIndex(articleDB.thirdRow);
-            do{
-                articles2.add(new Article(cursor.getString(headerColIndex), cursor.getString(descColIndex), cursor.getString(textColIndex)));
-            }
-            while (cursor.moveToNext());
-
-        }
-        else ((Button)findViewById(R.id.button)).setText("Нет записей");
-    }
     void updateList(ArrayList<Article> atricle)
     {
         adapter = new ArticleAdapter(this, R.layout.article_layout, atricle, getLayoutInflater());
         list.setAdapter(adapter);
+
     }
 
     private void showPopupMenu(View v, final int irrr) {
@@ -124,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements ListView.OnItemCl
                             case R.id.menuDel:
                                 db.execSQL("DELETE FROM "+articleDB.name+" WHERE "+articleDB.firstRow+"='"+ articles2.get(irrr).headder+"';");
                                 articles2.remove(irrr);
+                                //adapter.notifyDataSetChanged();
                                 updateList(articles2);
                                 return true;
                             case R.id.menuEdit:
